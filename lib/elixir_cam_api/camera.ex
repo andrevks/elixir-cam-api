@@ -3,10 +3,11 @@ defmodule ElixirCamApi.Camera do
   import Ecto.Changeset
 
   schema "cameras" do
+    field :name, :string
     field :brand, :string
-    field :model, :string
+    field :is_active, :boolean, default: false
 
-    many_to_many(:users, ElixirCamApi.User, join_through: "user_cameras")
+    belongs_to(:user, ElixirCamApi.User)
 
     timestamps(type: :utc_datetime)
   end
@@ -14,7 +15,7 @@ defmodule ElixirCamApi.Camera do
   @doc false
   def changeset(camera, attrs) do
     camera
-    |> cast(attrs, [:brand, :model])
-    |> validate_required([:brand, :model])
+    |> cast(attrs, [:brand, :name, :is_active, :user_id])
+    |> validate_required([:brand, :name, :is_active, :user_id])
   end
 end

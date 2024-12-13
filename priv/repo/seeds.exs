@@ -1,7 +1,6 @@
 alias ElixirCamApi.Repo
 alias ElixirCamApi.User
 alias ElixirCamApi.Camera
-alias ElixirCamApi.UserCamera
 
 defmodule SeedScript do
   def run do
@@ -12,21 +11,7 @@ defmodule SeedScript do
   defp seed_database do
     brands = ["Intelbras", "Hikvision", "Giga", "Vivotek"]
 
-    # Pre-generate cameras (50 unique cameras)
-    cameras =
-      Enum.map(1..50, fn _ ->
-        %{
-          brand: Enum.random(brands),
-          model: "Model #{Ecto.UUID.generate()}",
-          inserted_at: DateTime.truncate(DateTime.utc_now(), :second),
-          updated_at: DateTime.truncate(DateTime.utc_now(), :second)
-        }
-      end)
-
-    # Insert all cameras in batches
-    camera_ids = batch_insert(cameras, Camera)
-
-    # Generate 1,000 users and their user-camera associations
+    # Generate 1,000 users
     users =
       Enum.map(1..1000, fn i ->
         %{
@@ -37,45 +22,40 @@ defmodule SeedScript do
         }
       end)
 
-    # Insert users in batches
+    # Insert users in batches and retrieve their IDs
     user_ids = batch_insert(users, User)
 
-    # Generate user-camera associations
-    user_cameras =
-      Enum.flat_map(user_ids, fn user_id ->
-        Enum.map(Enum.take_random(camera_ids, 10), fn camera_id ->
-          %{
-            user_id: user_id,
-            camera_id: camera_id,
-            serial_number: unique_serial_number(user_id, camera_id),
-            is_active: Enum.random([true, false]),
-            inserted_at: DateTime.truncate(DateTime.utc_now(), :second),
-            updated_at: DateTime.truncate(DateTime.utc_now(), :second)
-          }
-        end)
-      end)
+    # Generate cameras for users
+    Task.async_stream(
+      user_ids,
+      fn user_id ->
+        cameras =
+          Enum.map(1..50, fn _ ->
+            %{
+              name: "Camera #{Ecto.UUID.generate()}",
+              brand: Enum.random(brands),
+              is_active: Enum.random([true, false]),
+              user_id: user_id,
+              inserted_at: DateTime.truncate(DateTime.utc_now(), :second),
+              updated_at: DateTime.truncate(DateTime.utc_now(), :second)
+            }
+          end)
 
-    # Insert user-camera associations in batches
-    batch_insert(user_cameras, UserCamera)
+        Repo.insert_all(Camera, cameras)
+      end,
+      max_concurrency: System.schedulers_online()
+    )
+    |> Stream.run()
   end
 
-  defp unique_serial_number(user_id, camera_id) do
-    "SN-#{user_id}-#{camera_id}-#{Ecto.UUID.generate()}"
-  end
-
-  # Helper function to insert data in batches
+  # Helper function to insert data in batches and retrieve inserted IDs
   defp batch_insert(data, schema_module, batch_size \\ 1000) do
     Enum.chunk_every(data, batch_size)
     |> Enum.flat_map(fn batch ->
-      {:ok, ids} =
-        Repo.transaction(fn ->
-          Repo.insert_all(schema_module, batch, returning: [:id])
-          |> case do
-            {_, ids} -> Enum.map(ids, & &1.id)
-          end
-        end)
-
-      ids
+      Repo.insert_all(schema_module, batch, returning: [:id])
+      |> case do
+        {_, rows} -> Enum.map(rows, & &1.id)
+      end
     end)
   end
 end
