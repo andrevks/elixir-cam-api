@@ -17,7 +17,8 @@ defmodule ElixirCamApi.Application do
       # Start a worker by calling: ElixirCamApi.Worker.start_link(arg)
       # {ElixirCamApi.Worker, arg},
       # Start to serve requests, typically the last entry
-      ElixirCamApiWeb.Endpoint
+      ElixirCamApiWeb.Endpoint,
+      {Task.Supervisor, name: ElixirCamApi.AsyncEmailSupervisor}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

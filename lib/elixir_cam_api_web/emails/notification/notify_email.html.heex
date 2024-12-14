@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notification Email</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; background-color: #f9f9f9; padding: 20px; color: #333;">
+    <div style="max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+        <h1 style="color: #444;"><%= @camera_brand %> Camera Notification</h1>
+        <p>Dear <strong><%= @user_name %></strong>,</p>
+        <p>We wanted to notify you about one of your active cameras from <strong><%= @camera_brand %></strong>.</p>
+        <p><strong>Details of the Camera:</strong></p>
+        <ul>
+            <li><strong>Name:</strong> <%= @camera_brand %></li>
+            <li><strong>Status:</strong> Active</li>
+        </ul>
+        <p>For support, please contact us or visit our help center.</p>
+        <hr style="border: none; border-top: 1px solid #ccc;">
+        <footer style="text-align: center; font-size: 0.9em; color: #666;">
+            <p>For support, visit <a href="https://support.camelixir.com" style="color: #007BFF;">support.camelixir.com</a> or email us at <a href="mailto:support@camelixir.com" style="color: #007BFF;">support@camelixir.com</a>.</p>
+            <p>© 2024 Cam Elixir</p>
+        </footer>
+    </div>
+</body>
+</html>

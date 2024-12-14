@@ -2,7 +2,9 @@ defmodule ElixirCamApi.User do
   use Ecto.Schema
   import Ecto.Changeset
   import Ecto.Query
+  alias ElixirCamApi.Emails.UserEmail
   alias ElixirCamApi.{Repo, User}
+  alias ElixirCamApi.Mailer
 
   schema "users" do
     field :name, :string
@@ -21,6 +23,46 @@ defmodule ElixirCamApi.User do
     |> validate_required([:name, :email, :deactivated_at])
     |> validate_format(:email, ~r/@/)
     |> unique_constraint(:email)
+  end
+
+  @doc """
+    Notify all users with active Hikvision cameras asynchronously.
+    This method fetches users with active Hikvision cameras and sends notifications.
+  """
+  def notify_users do
+    users_with_cameras()
+    |> Enum.each(fn {user, cameras} ->
+      Enum.each(cameras, fn camera ->
+        send_email_async(user, camera)
+      end)
+    end)
+  end
+
+  defp users_with_cameras(camera_name \\ "Hikvision") do
+    from(u in User,
+      join: c in assoc(u, :cameras),
+      where: c.brand == ^camera_name and c.is_active == true,
+      preload: [cameras: c],
+      select: {u, c}
+    )
+    |> Repo.all()
+    |> Enum.group_by(fn {user, _camera} -> user end, fn {_user, camera} -> camera end)
+  end
+
+  defp send_email_async(user, camera) do
+    if Mix.env() == :test do
+      # Deliver email synchronously during testing
+      user
+      |> UserEmail.notify_user(camera)
+      |> Mailer.deliver()
+    else
+      # Use async delivery in non-test environments
+      Task.Supervisor.start_child(ElixirCamApi.TaskSupervisor, fn ->
+        user
+        |> UserEmail.notify_user(camera)
+        |> Mailer.deliver()
+      end)
+    end
   end
 
   @doc """
@@ -73,6 +115,7 @@ defmodule ElixirCamApi.User do
 
   defp compose_query({:order_by, order_by}, query) do
     IO.inspect(order_by, label: "Applying order_by Filter")
+
     case order_by do
       "name" -> order_by(query, [u, c], asc: c.name)
       "brand" -> order_by(query, [u, c], asc: c.brand)

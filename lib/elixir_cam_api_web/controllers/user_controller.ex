@@ -22,7 +22,6 @@ defmodule ElixirCamApiWeb.UserController do
       order_by: order_by
     }
 
-
     users_with_cameras =
       User.list_users_with_cameras(options)
 
@@ -35,5 +34,14 @@ defmodule ElixirCamApiWeb.UserController do
         total_entries: users_with_cameras.total_entries
       }
     })
+  end
+
+  @doc """
+  Notify all users with active Hikvision cameras.
+  """
+  def notify(conn, _params) do
+    User.notify_users()
+
+    json(conn, %{message: "Notifications sent to users with Hikvision cameras."})
   end
 end

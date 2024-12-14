@@ -9,6 +9,7 @@ defmodule ElixirCamApiWeb.Router do
     pipe_through :api
 
     get "/cameras", UserController, :index
+    post "/notify-users", UserController, :notify
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
