@@ -32,6 +32,7 @@ defmodule ElixirCamApi.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:cors_plug, "~> 3.0"},
       {:scrivener_ecto, "~> 2.0"},
       {:phoenix, "~> 1.7.17"},
       {:phoenix_ecto, "~> 4.5"},

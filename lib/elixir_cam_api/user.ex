@@ -42,7 +42,6 @@ defmodule ElixirCamApi.User do
     from(u in User,
       join: c in assoc(u, :cameras),
       where: c.brand == ^camera_name and c.is_active == true,
-      preload: [cameras: c],
       select: {u, c}
     )
     |> Repo.all()

@@ -8,18 +8,12 @@ defmodule ElixirCamApiWeb.UserController do
   Supports optional filtering and sorting.
   """
   def index(conn, params) do
-    camera_name = Map.get(params, "camera_name")
-    camera_brand = Map.get(params, "camera_brand")
-    page = String.to_integer(Map.get(params, "page", "1"))
-    per_page = String.to_integer(Map.get(params, "per_page", "10"))
-    order_by = Map.get(params, "order_by", "brand")
-
     options = %{
-      camera_name: camera_name,
-      camera_brand: camera_brand,
-      page: page,
-      per_page: per_page,
-      order_by: order_by
+      camera_name: Map.get(params, "camera_name"),
+      camera_brand: Map.get(params, "camera_brand"),
+      page: String.to_integer(Map.get(params, "page", "1")),
+      per_page: String.to_integer(Map.get(params, "per_page", "10")),
+      order_by: Map.get(params, "order_by", "brand")
     }
 
     users_with_cameras =
