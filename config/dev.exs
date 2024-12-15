@@ -53,7 +53,11 @@ config :elixir_cam_api, ElixirCamApiWeb.Endpoint,
 config :elixir_cam_api, dev_routes: true
 
 # Do not include metadata nor timestamps in development logs
-config :logger, :console, format: "[$level] $message\n"
+config :logger, :console,
+  level: :debug,
+  # Colorized logging
+  format: "\e[36m$time [$level] $message\e[0m\n",
+  metadata: [:request_id, :module, :function, :line]
 
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.

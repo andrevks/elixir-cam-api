@@ -68,13 +68,10 @@ defmodule ElixirCamApi.User do
   List users and their cameras with optional filtering and pagination.
   """
   def list_users_with_cameras(opts \\ []) do
-    IO.inspect(opts, label: "Received Options")
 
     page = opts[:page] || 1
     per_page = opts[:per_page] || 10
     filters = Enum.reject(opts, fn {key, _} -> key in [:page, :per_page] end)
-
-    IO.inspect(filters, label: "Filters After Rejecting Pagination Params")
 
     base_query()
     |> build_query(filters)
@@ -97,24 +94,19 @@ defmodule ElixirCamApi.User do
 
   defp build_query(query, criteria) do
     Enum.reduce(criteria, query, fn filter, acc ->
-      IO.inspect(filter, label: "Processing Filter")
       compose_query(filter, acc)
     end)
   end
 
   defp compose_query({:camera_name, name}, query) do
-    IO.inspect(name, label: "Applying camera_name Filter")
     where(query, [u, c], ilike(c.name, ^"%#{name}%"))
   end
 
   defp compose_query({:camera_brand, brand}, query) do
-    IO.inspect(brand, label: "Applying camera_brand Filter")
     where(query, [u, c], ilike(c.brand, ^"%#{brand}%"))
   end
 
   defp compose_query({:order_by, order_by}, query) do
-    IO.inspect(order_by, label: "Applying order_by Filter")
-
     case order_by do
       "name" -> order_by(query, [u, c], asc: c.name)
       "brand" -> order_by(query, [u, c], asc: c.brand)
@@ -123,7 +115,6 @@ defmodule ElixirCamApi.User do
   end
 
   defp compose_query(_, query) do
-    IO.puts("Unsupported Filter Ignored")
     query
   end
 end

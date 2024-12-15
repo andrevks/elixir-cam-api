@@ -4,7 +4,12 @@ defmodule ElixirCamApi.Emails.UserEmail do
 
   # Compile the HTML template
   @external_resource "lib/elixir_cam_api_web/templates/email/notify_email.html.eex"
-  EEx.function_from_file(:defp, :render_html_template, "lib/elixir_cam_api_web/emails/notification/notify_email.html.heex", [:assigns])
+  EEx.function_from_file(
+    :defp,
+    :render_html_template,
+    "lib/elixir_cam_api_web/emails/notification/notify_email.html.heex",
+    [:assigns]
+  )
 
   def notify_user(user, camera) do
     new()

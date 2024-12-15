@@ -65,9 +65,5 @@ defmodule ElixirCamApiWeb.NotifyUserTest do
       assert email.subject == "Hikvision Camera Notification"
       assert email.html_body =~ "<li><strong>Name:</strong> Hikvision</li>"
     end)
-
   end
-
-
-
 end

@@ -39,6 +39,7 @@ defmodule ElixirCamApiWeb.Endpoint do
   plug Plug.RequestId
   plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]
 
+  plug Plug.Logger, log: :info
   plug Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json],
     pass: ["*/*"],
@@ -47,7 +48,12 @@ defmodule ElixirCamApiWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
-  plug CORSPlug, origin: "*"
-  plug ElixirCamApiWeb.Router
 
+  plug CORSPlug,
+    origin: "*",
+    allow_headers: ["content-type", "authorization"],
+    allow_methods: ["GET", "POST", "OPTIONS"],
+    allow_credentials: true
+
+  plug ElixirCamApiWeb.Router
 end

@@ -31,7 +31,14 @@ config :elixir_cam_api, ElixirCamApiWeb.Endpoint,
 # at the `config/runtime.exs`.
 config :elixir_cam_api, ElixirCamApi.Mailer, adapter: Swoosh.Adapters.Local
 
-# Configures Elixir's Logger
+config :logger,
+  backends: [:console],
+  compile_time_purge_matching: [
+    # Suppress debug logs in production
+    [level_lower_than: :info]
+  ]
+
+# Console backend for text-based logs
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
