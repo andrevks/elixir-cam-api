@@ -231,7 +231,6 @@ mix test
 ### Decisões Técnicas
 
 - **Uso de RESTful API**: Escolhi uma API RESTful por ser uma solução amplamente adotada e robusta, ideal para integração com SPAs e serviços externos. Ela facilita a manutenção, escalabilidade e a adoção de padrões bem estabelecidos.
-- **Seção de Formatação**: A formatação dos dados retornados pelo endpoint `/api/cameras` foi isolada no módulo `ElixirCamApi.Users.Formatter` para garantir coesão e facilitar a manutenção.
 - **Separação de Contextos**: Usuários e câmeras possuem seus contextos próprios para facilitar a organização e escalabilidade.
 - **CORS**: Configuração básica com o `CorsPlug`, permitindo integração com aplicações frontend.
 - **Logs**: O `Plug.Logger` foi utilizado para prover logs padronizados e úteis em produção.
