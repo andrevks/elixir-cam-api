@@ -41,28 +41,6 @@ O projeto foi desenvolvido com o objetivo de demonstrar expertise em desenvolvim
 
 ---
 
-## Estrutura do Projeto
-
-```
-lib/
-├── elixir_cam_api/
-│   ├── users/          # Contexto e schema de usuários
-│   │   ├── user.ex     # Schema de usuários
-│   │   ├── user_context.ex # Contexto de usuários
-│   ├── cameras/        # Contexto e schema de câmeras
-│   │   ├── camera.ex   # Schema de câmeras
-│   │   ├── camera_context.ex # Contexto de câmeras
-│   ├── repo.ex         # Configuração do repositório (Ecto)
-├── elixir_cam_api_web/
-│   ├── controllers/    # Controladores dos endpoints
-│   │   ├── user_controller.ex
-│   ├── router.ex       # Definição das rotas da API
-priv/repo/
-├── seeds.exs           # Script para semear o banco de dados
-```
-
----
-
 ## Requisitos
 
 - **Elixir**: versão 1.14 ou superior.
@@ -79,7 +57,7 @@ priv/repo/
 1. **Clone o Repositório**:
     
     ```bash
-    git clone https://github.com/seu-usuario/elixir-cam-api.git
+    git clone https://github.com/andrevks/elixir-cam-api.git
     cd elixir-cam-api
     ```
     
@@ -107,7 +85,7 @@ priv/repo/
 1. **Clone o Repositório**:
     
     ```bash
-    git clone https://github.com/seu-usuario/elixir-cam-api.git
+    git clone https://github.com/andrevks/elixir-cam-api.git
     cd elixir-cam-api
     ```
     
