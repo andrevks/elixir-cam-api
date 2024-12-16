@@ -1,7 +1,8 @@
 defmodule ElixirCamApiWeb.UserController do
   use ElixirCamApiWeb, :controller
 
-  alias ElixirCamApi.User
+  alias ElixirCamApi.UserContext, as: Users
+  alias ElixirCamApi.Users.Formatter
 
   @doc """
   Endpoint to list users and their active cameras.
@@ -16,16 +17,15 @@ defmodule ElixirCamApiWeb.UserController do
       order_by: Map.get(params, "order_by", "brand")
     }
 
-    users_with_cameras =
-      User.list_users_with_cameras(options)
+    paginated_users = Users.list_users_with_cameras(options)
 
     json(conn, %{
-      data: users_with_cameras.entries,
+      data: Formatter.format_users(paginated_users.entries),
       meta: %{
-        page: users_with_cameras.page_number,
-        per_page: users_with_cameras.page_size,
-        total_pages: users_with_cameras.total_pages,
-        total_entries: users_with_cameras.total_entries
+        page: paginated_users.page_number,
+        per_page: paginated_users.page_size,
+        total_pages: paginated_users.total_pages,
+        total_entries: paginated_users.total_entries
       }
     })
   end
@@ -34,7 +34,7 @@ defmodule ElixirCamApiWeb.UserController do
   Notify all users with active Hikvision cameras.
   """
   def notify(conn, _params) do
-    User.notify_users()
+    Users.notify_users()
 
     json(conn, %{message: "Notifications sent to users with Hikvision cameras."})
   end

@@ -47,15 +47,23 @@ defmodule ElixirCamApiWeb.UserControllerTest do
 
     assert json_response(conn, 200)["meta"]["per_page"] == 2
     assert json_response(conn, 200)["meta"]["page"] == 1
-    assert length(json_response(conn, 200)["data"]) == 2
+
+    data = json_response(conn, 200)["data"]
+    assert length(data) == 1  # Since only one user exists in the setup
+
+    cameras = data |> hd() |> Map.get("cameras")
+    assert length(cameras) == 2
   end
 
   test "GET /api/cameras filters by camera_brand", %{conn: conn} do
     conn = get(conn, "/api/cameras", %{"camera_brand" => "Hikvision"})
 
     data = json_response(conn, 200)["data"]
-    assert length(data) == 1
-    assert Enum.all?(data, fn camera -> camera["camera_brand"] == "Hikvision" end)
+    assert length(data) == 1  # Only one user
+
+    cameras = data |> hd() |> Map.get("cameras")
+    assert length(cameras) == 1
+    assert Enum.all?(cameras, fn camera -> camera["brand"] == "Hikvision" end)
   end
 
   test "GET /api/cameras filters by camera_name", %{conn: conn} do
@@ -63,7 +71,10 @@ defmodule ElixirCamApiWeb.UserControllerTest do
 
     data = json_response(conn, 200)["data"]
     assert length(data) == 1
-    assert Enum.all?(data, fn camera -> camera["camera_name"] == "Camera One" end)
+
+    cameras = data |> hd() |> Map.get("cameras")
+    assert length(cameras) == 1
+    assert Enum.all?(cameras, fn camera -> camera["name"] == "Camera One" end)
   end
 
   test "GET /api/cameras filters by both camera_brand and camera_name", %{conn: conn} do
@@ -72,22 +83,20 @@ defmodule ElixirCamApiWeb.UserControllerTest do
     data = json_response(conn, 200)["data"]
     assert length(data) == 1
 
-    assert Enum.all?(data, fn camera ->
-             camera["camera_brand"] == "Hikvision" and camera["camera_name"] == "Camera One"
+    cameras = data |> hd() |> Map.get("cameras")
+    assert length(cameras) == 1
+    assert Enum.all?(cameras, fn camera ->
+             camera["brand"] == "Hikvision" and camera["name"] == "Camera One"
            end)
   end
 
   test "GET /api/cameras returns results ordered by brand", %{conn: conn} do
-    # Perform the GET request with "order_by" set to "brand"
     conn = get(conn, "/api/cameras", %{"order_by" => "brand"})
 
-    # Parse the JSON response
     data = json_response(conn, 200)["data"]
+    cameras = data |> hd() |> Map.get("cameras")
+    camera_brands = Enum.map(cameras, fn camera -> camera["brand"] end)
 
-    # Extract the camera_brand values
-    camera_brands = Enum.map(data, fn item -> item["camera_brand"] end)
-
-    # Assert that the camera_brands are in ascending order
     assert camera_brands == Enum.sort(camera_brands)
   end
 
@@ -101,7 +110,9 @@ defmodule ElixirCamApiWeb.UserControllerTest do
     conn = get(conn, "/api/cameras", %{"page" => "1", "per_page" => "1000"})
 
     data = json_response(conn, 200)["data"]
-    assert length(data) <= 1000
+    cameras = data |> hd() |> Map.get("cameras")
+
+    assert length(cameras) <= 1000
   end
 
   test "GET /api/cameras handles invalid pagination gracefully", %{conn: conn} do

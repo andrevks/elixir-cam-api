@@ -1,29 +1,8 @@
-defmodule ElixirCamApi.User do
-  use Ecto.Schema
-  import Ecto.Changeset
+defmodule ElixirCamApi.UserContext do
   import Ecto.Query
   alias ElixirCamApi.Emails.UserEmail
   alias ElixirCamApi.{Repo, User}
   alias ElixirCamApi.Mailer
-
-  schema "users" do
-    field :name, :string
-    field :email, :string
-    field :deactivated_at, :utc_datetime
-
-    has_many(:cameras, ElixirCamApi.Camera)
-
-    timestamps(type: :utc_datetime)
-  end
-
-  @doc false
-  def changeset(user, attrs) do
-    user
-    |> cast(attrs, [:name, :email, :deactivated_at])
-    |> validate_required([:name, :email, :deactivated_at])
-    |> validate_format(:email, ~r/@/)
-    |> unique_constraint(:email)
-  end
 
   @doc """
     Notify all users with active Hikvision cameras asynchronously.
@@ -68,7 +47,6 @@ defmodule ElixirCamApi.User do
   List users and their cameras with optional filtering and pagination.
   """
   def list_users_with_cameras(opts \\ []) do
-
     page = opts[:page] || 1
     per_page = opts[:per_page] || 10
     filters = Enum.reject(opts, fn {key, _} -> key in [:page, :per_page] end)
