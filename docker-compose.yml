@@ -1,17 +1,38 @@
-version: "3"
+version: "3.9"
 
 services:
-  pg-elixir:
+  db:
     image: postgres:14.2-alpine
     container_name: pg-elixir
+    restart: always
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "postgres"
-      POSTGRES_DB: "elixir_cam_api_dev"
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: elixir_cam_api_dev
     volumes:
       - pgdata:/var/lib/postgresql/data
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: elixir_cam_api
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "4000:4000"
+    environment:
+      DATABASE_URL: "ecto://postgres:postgres@db:5432/elixir_cam_api_dev"
+      SECRET_KEY_BASE: "uZKYlYB/08GyKIJue489UjZBxw8RBannyuc1WW8n0K7OeVKEOwbPCMdReixfLdDu"
+      MIX_ENV: "prod"
+    command: >
+      sh -c "
+      mix ecto.setup &&
+      mix phx.server
+      "
 
 volumes:
   pgdata:
