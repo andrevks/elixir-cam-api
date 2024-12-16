@@ -1,6 +1,4 @@
-# README CAM API
-
-# ElixirCamApi
+# elixir-cam-api
 
 ## Sobre o Projeto
 
